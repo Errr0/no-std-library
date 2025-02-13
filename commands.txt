@@ -1,0 +1,2 @@
+g++ -o2 -Wall -nostdlib src\main.cpp -o build\main.exe
+.\build\main.exe
