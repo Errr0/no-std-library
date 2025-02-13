@@ -1,25 +1,28 @@
 #include <windows.h>
 
-int main() {
-    // Handle to the console output (stdout)
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+extern "C" void _start() {
+    HANDLE hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    HANDLE hConsoleIn = GetStdHandle(STD_INPUT_HANDLE);
+    if (hConsoleOut == INVALID_HANDLE_VALUE || hConsoleIn == INVALID_HANDLE_VALUE) {
+        return;
+    }
 
-    // Writing to console
-    const char* message = "Hello, World!\n";
+    const char* prompt = "Enter something: ";
     DWORD written;
-    WriteConsole(hConsole, message, 14, &written, NULL);
+    WriteConsoleA(hConsoleOut, prompt, 15, &written, NULL);
 
-    // Handle to the console input (stdin)
-    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
-    
-    // Reading input from the console
     char input[100];
     DWORD read;
-    ReadConsole(hInput, input, 100, &read, NULL);
-    
-    // Writing the input back to console
-    WriteConsole(hConsole, "You entered: ", 13, &written, NULL);
-    WriteConsole(hConsole, input, read, &written, NULL);
-    
-    return 0;
+    if (ReadConsoleA(hConsoleIn, input, sizeof(input) - 1, &read, NULL)) {
+        input[read] = '\0';
+    }
+
+    const char* message = "You entered: ";
+    WriteConsoleA(hConsoleOut, message, 14, &written, NULL);
+
+    WriteConsoleA(hConsoleOut, input, read, &written, NULL);
+
+    // Exit the program
+    ExitProcess(0);
 }
+
